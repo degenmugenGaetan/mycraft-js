@@ -2,7 +2,7 @@
 * @type {import('vite').UserConfig}
 */
 export default {
-  base: '/mycraft-js/',
+  base: '/',
   build: {
     sourcemap: true
   }
