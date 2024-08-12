@@ -1,0 +1,18 @@
+{
+  "name": "mycraft-js",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview --host 127.0.0.1"
+  },
+  "devDependencies": {
+    "vite": "^5.3.4"
+  },
+  "dependencies": {
+    "@permaweb/aoconnect": "^0.0.58",
+    "three": "^0.167.1"
+  }
+}
