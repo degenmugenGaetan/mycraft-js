@@ -29,8 +29,8 @@ export function setupUI(world, player, physics, scene) {
 
   const terrainFolder = worldFolder.addFolder('Terrain').close();
   terrainFolder.add(world.params, 'seed', 0, 10000, 1).name('Seed');
-  terrainFolder.add(world.params.terrain, 'scale', 10, 100).name('Scale');
-  terrainFolder.add(world.params.terrain, 'magnitude', 0, 1).name('Magnitude');
+  terrainFolder.add(world.params.terrain, 'scale', 1, 10).name('Scale');
+  terrainFolder.add(world.params.terrain, 'magnitude', 0.1, 0.1).name('Magnitude');
   terrainFolder.add(world.params.terrain, 'offset', 0, 1).name('Ground Offset');
   terrainFolder.add(world.params.terrain, 'waterHeight', 0, 16).name('Water Offset');
 

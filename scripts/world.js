@@ -33,7 +33,7 @@ export class World extends THREE.Group {
     seed: 0,
     terrain: {
       scale: 30,
-      magnitude: 0.2,
+      magnitude: 0.1,
       offset: 0.25,
       waterHeight: 5
     },
@@ -68,7 +68,7 @@ export class World extends THREE.Group {
 
     document.addEventListener('keydown', (ev) => {
       switch (ev.code) {
-        case 'F1':
+        case 'KeyX':
           this.save();
           break;
         case 'F2':
