@@ -14,7 +14,7 @@ const messageStatus = document.getElementById('messageStatus');
 connectBtn.addEventListener('click', connectWallet);
 disconnectBtn.addEventListener('click', disconnectWallet);
 sendMessageBtn.addEventListener('click', toggleSendMessage);
-submitMessageBtn.addEventListener('click', sendMessage);
+submitMessageBtn.addEventListener('click', handleSendMessage);
 
 async function connectWallet() {
     if (window.arweaveWallet) {
@@ -47,7 +47,7 @@ function toggleSendMessage() {
     sendMessageSection.style.display = sendMessageSection.style.display === 'none' ? 'block' : 'none';
 }
 
-async function sendMessage() {
+async function handleSendMessage() {
     if (!walletAddress) {
         messageStatus.textContent = 'Please connect your wallet first.';
         messageStatus.className = 'error';
@@ -55,15 +55,7 @@ async function sendMessage() {
     }
 
     try {
-        const signer = createDataItemSigner(window.arweaveWallet);
-        const messageId = await message({
-            process: 'q6q0mjZ2UYUpdDYmxemVTyjKf6176F2Sse3N7uAW3D0',
-            signer: signer,
-            tags: [
-                { name: 'Action', value: 'SetMessages' }
-            ],
-            data: messageData.value,
-        });
+        const messageId = await sendMessage(messageData.value);
         console.log('Message sent with ID:', messageId);
         messageStatus.textContent = 'Message sent successfully!';
         messageStatus.className = 'success';
@@ -72,6 +64,25 @@ async function sendMessage() {
         messageStatus.textContent = 'Failed to send message: ' + error.message;
         messageStatus.className = 'error';
     }
+}
+
+// Export the sendMessage function to be used in other files
+export async function sendMessage(data) {
+    if (!walletAddress) {
+        throw new Error('Wallet not connected');
+    }
+
+    const signer = createDataItemSigner(window.arweaveWallet);
+    const messageId = await message({
+        process: 'q6q0mjZ2UYUpdDYmxemVTyjKf6176F2Sse3N7uAW3D0',
+        signer: signer,
+        tags: [
+            { name: 'Action', value: 'SetMessages' }
+        ],
+        data: data,
+    });
+
+    return messageId;
 }
 
 // Initialize button states

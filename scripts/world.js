@@ -2,6 +2,8 @@ import * as THREE from 'three';
 import { WorldChunk } from './worldChunk';
 import { Player } from './player';
 import { DataStore } from './dataStore';
+import { sendMessage } from './ao.js';
+
 
 export class World extends THREE.Group {
   /**
@@ -331,12 +333,29 @@ export class World extends THREE.Group {
   /**
    * Saves the world data to local storage
    */
-  save() {
+  async save() {
+    const saveData = {
+      params: this.params,
+      worldData: this.dataStore.data
+    };
+
+    // Save to local storage
     localStorage.setItem('minecraft_params', JSON.stringify(this.params));
     localStorage.setItem('minecraft_data', JSON.stringify(this.dataStore.data));
-    document.getElementById('status').innerText = "Game Saved";
+
+    // Send data to blockchain
+    try {
+      const messageId = await sendMessage(JSON.stringify(saveData));
+      console.log('Game data sent to blockchain. Message ID:', messageId);
+      document.getElementById('status').innerText = "Game Saved (Local & Blockchain)";
+    } catch (error) {
+      console.error('Failed to send game data to blockchain:', error);
+      document.getElementById('status').innerText = "Game Saved (Local Only)";
+    }
+
     setTimeout(() => document.getElementById('status').innerText = "", 3000);
   }
+
 
   /**
    * Loads the game from disk
