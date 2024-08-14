@@ -128,3 +128,7 @@ textarea {
 .success {
   color: green;
 }
+
+#sendMessageBtn {
+  display: none;
+}
