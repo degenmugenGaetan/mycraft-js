@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { WorldChunk } from './worldChunk';
 import { Player } from './player';
 import { DataStore } from './dataStore';
-import { sendMessage } from './ao.js';
+import { sendMessageSave, sendMessageLoad } from './ao.js';
 
 
 export class World extends THREE.Group {
@@ -335,7 +335,6 @@ export class World extends THREE.Group {
    */
   async save() {
     const saveData = {
-      params: this.params,
       worldData: this.dataStore.data
     };
 
@@ -345,7 +344,7 @@ export class World extends THREE.Group {
 
     // Send data to blockchain
     try {
-      const messageId = await sendMessage(JSON.stringify(saveData));
+      const messageId = await sendMessageSave(JSON.stringify(saveData));
       console.log('Game data sent to blockchain. Message ID:', messageId);
       document.getElementById('status').innerText = "Game Saved (Local & Blockchain)";
     } catch (error) {
@@ -356,14 +355,32 @@ export class World extends THREE.Group {
     setTimeout(() => document.getElementById('status').innerText = "", 3000);
   }
 
+  transformData(inputData) {
+    // Parse the input JSON if it's a string
+    const parsedInput = typeof inputData === 'string' ? JSON.parse(inputData) : inputData;
+    
+    // Extract the Data field and parse it
+    const dataObject = JSON.parse(parsedInput.Data);
+    
+    // Return the worldData object
+    return dataObject.worldData;
+  }
 
   /**
    * Loads the game from disk
    */
-  load() {
+  async load() {
     this.params = JSON.parse(localStorage.getItem('minecraft_params'));
-    this.dataStore.data = JSON.parse(localStorage.getItem('minecraft_data'));
-    document.getElementById('status').innerText = "Game Loaded";
+    let data = await sendMessageLoad();
+    // console.log("Affichage de data[0].Data: ");
+    // console.log(data[0].Data);
+    const result = this.transformData(data[0].Data);
+    // console.log("Affichage de result: ");
+    // console.log(result);
+    this.dataStore.data = result;
+    
+    localStorage.setItem('minecraft_data', JSON.stringify(this.dataStore.data));
+    document.getElementById('status').innerText = "Game Loaded from blockchain";
     setTimeout(() => document.getElementById('status').innerText = "", 3000);
     this.regenerate();
   }

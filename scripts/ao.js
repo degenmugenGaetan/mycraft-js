@@ -1,6 +1,7 @@
-import { createDataItemSigner, message } from '@permaweb/aoconnect';
+import { createDataItemSigner, message, result } from '@permaweb/aoconnect';
 
 let walletAddress = null;
+
 
 const connectBtn = document.getElementById('connectBtn');
 const disconnectBtn = document.getElementById('disconnectBtn');
@@ -67,7 +68,7 @@ async function handleSendMessage() {
 }
 
 // Export the sendMessage function to be used in other files
-export async function sendMessage(data) {
+export async function sendMessageSave(data) {
     if (!walletAddress) {
         throw new Error('Wallet not connected');
     }
@@ -83,6 +84,39 @@ export async function sendMessage(data) {
     });
 
     return messageId;
+}
+
+export async function sendMessageLoad() {
+    if (!walletAddress) {
+        throw new Error('Wallet not connected');
+    }
+
+    const signer = createDataItemSigner(window.arweaveWallet);
+
+    try {
+        const messageId = await message({
+            process: 'q6q0mjZ2UYUpdDYmxemVTyjKf6176F2Sse3N7uAW3D0',
+            signer: signer,
+            tags: [
+                { name: 'Action', value: 'GetMessages' }
+            ],
+        });
+        const { Messages, Error } = await result({
+            message: messageId,
+            process: 'q6q0mjZ2UYUpdDYmxemVTyjKf6176F2Sse3N7uAW3D0',
+        });
+        if (Error) {
+            alert("There was an error loading data:" + Error);
+            return;
+        }
+        if (!Messages || Messages.length === 0) {
+            alert('Message empty !');
+        }
+        return Messages;
+    } catch (error) {
+        alert('There was an error during loading data: ' + error);
+    }
+
 }
 
 // Initialize button states
